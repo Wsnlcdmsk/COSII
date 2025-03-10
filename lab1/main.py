@@ -1,9 +1,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import math
-from my_math import my_cos, my_sin, integral, power_fast, DFT, FFT, IDFT, IFFT, my_log2, my_sqrt
+from my_math import (my_cos, my_sin, integral, power_fast,
+                     DFT, FFT, IDFT, IFFT, my_log2, my_sqrt)
 import time
-from wav import save_wave
+from lab2.wav import save_wave
 
 
 a1, b1, v1 = 1, 3, 1
@@ -17,7 +18,7 @@ epsilon = 1e-15
 attenuation_factor = 0.5
 cutoff_frequency = 1
 
-
+я
 def U1(a1, b1, v1, t, phi0):
     return a1 * power_fast(my_sin(v1 * t + phi0), b1)
 
@@ -75,7 +76,8 @@ def calculate_fft_efficiency(N):
     print(f"⏳ БПФ быстрее ДПФ на {dft_time - fft_time:.6f} сек")
 
 
-result = integral(product_U1_U2, phi0, phi0 + 2 * math.pi, N, a1, b1, v1, a2, b2, v2, phi0)
+result = integral(product_U1_U2, phi0, phi0 + 2 * math.pi, N, a1, b1,
+                  v1, a2, b2, v2, phi0)
 print("Результат интегрирования:", result)
 
 if abs(result) < epsilon:
@@ -87,6 +89,9 @@ else:
 
 t = np.linspace(0, D, N)
 y = f(t, a1, b1, v1, a2, b2, v2, phi0)
+
+save_wave("🎧y.wav", y.real, round(N/D))
+print("🎵Аудиофайл 'y.wav' сохранен.")
 
 start_time = time.time()
 y_dft = DFT(y)
@@ -124,15 +129,18 @@ def calculate_amplitude(Y):
 amplitude_dft = calculate_amplitude(y_dft)
 amplitude_fft = calculate_amplitude(y_fft)
 
-y_fft_modified = modify_spectrum(y_fft, attenuation_factor, cutoff_frequency, N / D)
+y_fft_modified = modify_spectrum(y_fft, attenuation_factor,
+                                 cutoff_frequency, N / D)
 amplitude_fft_modified = calculate_amplitude(y_fft_modified)
 
 print(f"📌Время выполнения ДПФ: {dft_time:.5f} сек")
 print(f"📌Время выполнения БПФ: {fft_time:.5f} сек")
-print(f"⏳Время выполнения БПФ на {dft_time - fft_time:.5f} сек, быстрее чем ДПФ")
+print(f"⏳Время выполнения БПФ на {dft_time - fft_time:.5f} сек," +
+      " быстрее чем ДПФ")
 print(f"📌Время выполнения ОДПФ: {idft_time:.5f} сек")
 print(f"📌Время выполнения ОБПФ: {ifft_time:.5f} сек")
-print(f"⏳Время выполнения ОБПФ на {idft_time - ifft_time:.5f} сек, быстрее чем ОДПФ")
+print(f"⏳Время выполнения ОБПФ на {idft_time - ifft_time:.5f} сек," +
+      " быстрее чем ОДПФ")
 
 plt.figure(figsize=(12, 10))
 
@@ -143,7 +151,8 @@ plt.legend()
 plt.grid()
 
 plt.subplot(3, 2, 2)
-plt.plot(freq[:N//2], amplitude_fft_modified[:N//2], label="Измененная АЧХ", color='purple')
+plt.plot(freq[:N//2], amplitude_fft_modified[:N//2],
+         label="Измененная АЧХ", color='purple')
 plt.title("Амплитудный спектр после изменений")
 plt.legend()
 plt.grid()
@@ -161,13 +170,15 @@ plt.legend()
 plt.grid()
 
 plt.subplot(3, 2, 5)
-plt.plot(t, y_reconstructed_dft, label="Восстановленный сигнал (ОДПФ)", color='g')
+plt.plot(t, y_reconstructed_dft,
+         label="Восстановленный сигнал (ОДПФ)", color='g')
 plt.title("Восстановленный сигнал (ОДПФ)")
 plt.legend()
 plt.grid()
 
 plt.subplot(3, 2, 6)
-plt.plot(t, y_reconstructed_fft, label="Восстановленный сигнал (ОБПФ)", color='m')
+plt.plot(t, y_reconstructed_fft,
+         label="Восстановленный сигнал (ОБПФ)", color='m')
 plt.title("Восстановленный сигнал (ОБПФ)")
 plt.legend()
 plt.grid()

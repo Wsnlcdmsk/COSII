@@ -182,3 +182,65 @@ def IFFT(X):
         result[k + N // 2] = (even[k] - twiddle_factor * odd[k]) / 2
 
     return np.array(result)
+
+
+def convolution_manual(signal1, signal2):
+    """Выполняет операцию свертки двух сигналов (сдвиг первого сигнала по второму)."""
+    len_s1 = len(signal1)
+    len_s2 = len(signal2)
+    result_len = len_s1 + len_s2 - 1  # Длина результата свертки
+    result = np.zeros(result_len)
+
+    # Процесс свертки: для каждого сдвига вычисляем сумму произведений
+    for i in range(len_s1):
+        for j in range(len_s2):
+            result[i + j] += signal1[i] * signal2[j]
+
+    return result
+
+
+#Переделать
+def correlation_manual(signal1, signal2):
+    """Выполняет операцию корреляции двух сигналов (сдвиг первого сигнала по второму в обратном направлении)."""
+    len_s1 = len(signal1)
+    len_s2 = len(signal2)
+    result_len = len_s1 + len_s2 - 1  # Длина результата корреляции
+    result = np.zeros(result_len)
+
+    # Инвертируем второй сигнал
+    signal2_reversed = signal2[::-1]
+
+    # Процесс корреляции: для каждого сдвига вычисляем сумму произведений
+    for i in range(result_len):
+        for j in range(len_s2):
+            if 0 <= i - j < len_s1:  # проверка на выход за границы первого сигнала
+                result[i] += signal1[i - j] * signal2_reversed[j]
+
+    return result
+
+
+
+def convolution_fft(signal1, signal2):
+    """Выполняет свёртку через БПФ"""
+    N = len(signal1) + len(signal2) - 1
+    N_fft = 2**int(np.ceil(np.log2(N)))
+
+    X = FFT(np.pad(signal1, (0, N_fft - len(signal1))))
+    Y = FFT(np.pad(signal2, (0, N_fft - len(signal2))))
+    Z = X * Y
+
+    result = np.real(IFFT(Z))[:N]
+    return result
+
+
+def correlation_fft(signal1, signal2):
+    """Выполняет корреляцию через БПФ"""
+    N = len(signal1) + len(signal2) - 1
+    N_fft = 2**int(np.ceil(np.log2(N)))
+
+    X = FFT(np.pad(signal1, (0, N_fft - len(signal1))))
+    Y = FFT(np.pad(signal2, (0, N_fft - len(signal2))))
+    Z = X * np.conj(Y)
+
+    result = np.real(IFFT(Z))[:N]
+    return result
