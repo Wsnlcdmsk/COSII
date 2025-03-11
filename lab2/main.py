@@ -93,11 +93,8 @@ axs3[1, 1].set_title('Correlation (FFT): y_t * y_t')
 fig3.tight_layout()
 plt.show()
 
-
-print("Э")
-
 # Сохранение в музыкальный файл
-save_wave("convolution_output.wav", z1_t)
-save_wave("convolution_fft_output.wav", z2_t)
+save_wave("convolution_output.wav", z1_t, round(N / D))
+save_wave("convolution_fft_output.wav", z2_t, round(N / D))
 print("Файл convolution_output.wav сохранён!")
 print("Файл convolution_fft_output.wav сохранён!")

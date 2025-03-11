@@ -199,48 +199,35 @@ def convolution_manual(signal1, signal2):
     return result
 
 
-#Переделать
 def correlation_manual(signal1, signal2):
-    """Выполняет операцию корреляции двух сигналов (сдвиг первого сигнала по второму в обратном направлении)."""
-    len_s1 = len(signal1)
-    len_s2 = len(signal2)
-    result_len = len_s1 + len_s2 - 1  # Длина результата корреляции
-    result = np.zeros(result_len)
+    N = len(signal1)
+    correlation = np.zeros(N, dtype=float)
 
-    # Инвертируем второй сигнал
-    signal2_reversed = signal2[::-1]
+    # Вычисляем корреляцию для каждого сдвига k
+    for k in range(N):
+        for n in range(N):
+            correlation[k] += signal1[n] * signal2[(n + k) % N]
 
-    # Процесс корреляции: для каждого сдвига вычисляем сумму произведений
-    for i in range(result_len):
-        for j in range(len_s2):
-            if 0 <= i - j < len_s1:  # проверка на выход за границы первого сигнала
-                result[i] += signal1[i - j] * signal2_reversed[j]
-
-    return result
-
+    return correlation
 
 
 def convolution_fft(signal1, signal2):
     """Выполняет свёртку через БПФ"""
     N = len(signal1) + len(signal2) - 1
-    N_fft = 2**int(np.ceil(np.log2(N)))
+    N_fft = 2 ** int(np.ceil(np.log2(N)))
 
     X = FFT(np.pad(signal1, (0, N_fft - len(signal1))))
     Y = FFT(np.pad(signal2, (0, N_fft - len(signal2))))
     Z = X * Y
 
-    result = np.real(IFFT(Z))[:N]
+    result = np.real(IFFT(Z))[:N:]
     return result
 
 
 def correlation_fft(signal1, signal2):
-    """Выполняет корреляцию через БПФ"""
-    N = len(signal1) + len(signal2) - 1
-    N_fft = 2**int(np.ceil(np.log2(N)))
+    fft_signal1 = FFT(signal1)
+    fft_signal2 = FFT(signal2)
 
-    X = FFT(np.pad(signal1, (0, N_fft - len(signal1))))
-    Y = FFT(np.pad(signal2, (0, N_fft - len(signal2))))
-    Z = X * np.conj(Y)
+    correlation = IFFT(fft_signal1 * np.conj(fft_signal2))
 
-    result = np.real(IFFT(Z))[:N]
-    return result
+    return np.real(correlation)[::-1]
