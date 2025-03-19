@@ -18,7 +18,7 @@ epsilon = 1e-15
 attenuation_factor = 0.5
 cutoff_frequency = 1
 
-я
+
 def U1(a1, b1, v1, t, phi0):
     return a1 * power_fast(my_sin(v1 * t + phi0), b1)
 
